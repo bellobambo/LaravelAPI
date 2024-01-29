@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthorsRequest;
 use App\Http\Requests\StoreAuthorRequest;
 use App\Http\Requests\UpdateAuthorRequest;
 use App\Models\Author;
 use App\Http\Resources\AuthorsResource;
+use Faker\Factory;
+use Illuminate\Http\Request;
+
 
 class AuthorsController extends Controller
 {
@@ -28,9 +32,15 @@ class AuthorsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAuthorRequest $request)
+    public function store(AuthorsRequest $request)
     {
-        //
+
+        $faker = Factory::create(1);
+        $author = Author::create([
+            'name' => $faker->name
+        ]);
+
+        return new AuthorsResource($author);
     }
 
     /**
@@ -52,16 +62,20 @@ class AuthorsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAuthorRequest $request, Author $author)
+    public function update(AuthorsRequest $request, Author $author)
     {
-        //
+        $author->update([
+            'name' => $request->input('name')
+        ]);
+        return new AuthorsResource($author);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Author $author)
+    public function destroy(Request $request, Author $author)
     {
-        //
+        $author->delete();
+        return response(null, 204);
     }
 }
